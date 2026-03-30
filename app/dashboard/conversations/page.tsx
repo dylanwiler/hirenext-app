@@ -20,11 +20,10 @@ const DRAFTS: Record<string,string> = {
 export default function ConversationsPage() {
   const [active, setActive] = useState('justin')
   const [convs, setConvs] = useState(CONVS)
-  const [msg,
-  setMsg] = useState('')
+  const [msg, setMsg] = useState('')
   const [sending, setSending] = useState(false)
   const conv = convs.find(c => c.id === active)!
-  function aiDraft() { setMsg(DRAFTS[active] || DRAFTS.default.replace('{name}', conv.name.split(' ')[0])) }
+  function aiDraft() { setMsg(DRAFTS[active] || DRAFTS['default'].replace('{name}', conv.name.split(' ')[0])) }
   async function sendMsg() {
     if (!msg.trim()) return
     setSending(true)
@@ -36,7 +35,7 @@ export default function ConversationsPage() {
   }
   return (
     <div className="flex h-full">
-      <div className="w-72 flex flex-col flex-shrink-0" style={{ borderRight:'1px solid rgba(255,255,255,0.06)' }}>
+      <div className="w72 flex flex-col flex-shrink-0" style={{ borderRight:'1px solid rgba(255,255,255,0.06)' }}>
         <div className="px-5 py-4" style={{ borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
           <h1 className="font-display font-extrabold text-lg mb-3" style={{ color:'#F0EFEA' }}>Conversations</h1>
         </div>
@@ -57,29 +56,29 @@ export default function ConversationsPage() {
           <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold" style={{ background:conv.color,color:conv.tc }}>{conv.av}</div>
           <div className="flex-1"><div className="font-semibold text-sm" style={{ color:'#F0EFEA' }}>{conv.name}</div><div className="text-xs" style={{ color:'#4A4845' }}>{conv.score}/100 · {conv.platform}</div></div>
           <div className="flex gap-2">
-            <button onClick={aiDraft} className="btn-ghost border rounded-xl text-xs px-3 py-1.5 flex items-center gap-1.5" style={{ borderColor:'rgba(255,255,255,0.1)' }}><Zap size={12} style={{ color:'#1D9E75' }} /> AI Draft</button>
+            <button onClick={aiDraft} className="btn-ghost border rounded-xl text-xs px-3 py-1.5 flex items-center gap-1.5" style={{ borderColor:'rgba(255,255,255,0.1)' }}><Zap size={12} style={{ color:'s#1D9E75' }} /> AI Draft</button>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-3">
           {conv.msgs.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center" style={{ color:'#3A3A3A' }}>
               <MessageSquare size={32} className="mb-3 opacity-50" />
-              <p className="text-sm mb-4">No messages yet · click AI Draft to generate</p>
+              <p className="text-sm mb-4">No messages yet – click AI Draft to generate</p>
               <button onClick={aiDraft} className="btn-primary text-sm flex items-center gap-2"><Zap size={14} /> Generate outreach</button>
             </div>
           ) : conv.msgs.map((m, i) => (
             <div key={i} className="flex justify-end">
-              <div className="max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed" style={{ background:'rgba(29,158,117,0.12)', border:'1px solid rgba(29,158,117,0.25)', color:'#F0EFEA' }}>
+              <div className="max-w[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed" style={{ background:'rgba(29,158,117,0.12)', border:'1px solid rgba(29,158,117,0.25)', color:'#F0EFEA' }}>
                 {m.text}
-                <div className="text-xs mt-1" style={{ color:'#3A3A3A' }}>{close.time} → {m.status}</div>
+                <div className="text-xs mt-1" style={{ color:'#3A3A3A' }}>{m.time} → {m.status}</div>
               </div>
             </div>
           ))}
         </div>
         <div className="px-6 py-4" style={{ borderTop:'1px solid rgba(255,255,255,0.05)' }}>
           <div className="flex gap-3">
-            <textarea className="input flex-1 resize-none text-sm" style={{ height:'wpx, lineHeight:'1.6' }} placeholder="Type a message or click AI Draft..." value={msg} onChange={e => setMsg(e.target.value)} />
-            <div class Name="flex flex-col gap-2">
+            <textarea className="input flex-1 resize-none text-sm" style={{ height:'wpx', lineHeight:'1.6' }} placeholder="Type a message or click AI Draft..." value={msg} onChange={e => setMsg(e.target.value)} />
+            <div className="flex flex-col gap-2">
               <button onClick={aiDraft} className="btn-ghost border rounded-xl text-xs px-3 py-2 flex items-center gap-1" style={{ borderColor:'rgba(255,255,255,0.1)' }}><Zap size={12} style={{ color:'#1D9E75' }} /> AI</button>
               <button onClick={sendMsg} disabled={!msg.trim()||sending} className="btn-primary text-xs px-3 py-2 flex items-center gap-1 disabled:opacity-40"><Send size={12} /> {sending?'...':'Send'}</button>
             </div>
