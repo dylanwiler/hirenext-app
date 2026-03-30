@@ -15,7 +15,7 @@ const Logo = () => (
 
 const NAV = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
-  { href: '/dashboard/candidates', label: 'Candidates', icon: Users, badge: '48', badgeColor: '#1D9E75' },
+  { href: '/dashboard/candidates', label: 'Candidates', icon: Users, badge: '48' },
   { href: '/dashboard/conversations', label: 'Inbox', icon: MessageSquare, badge: '2', badgeColor: '#E24B4A' },
   { href: '/dashboard/interviews', label: 'Interviews', icon: Mic },
   { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
@@ -44,39 +44,50 @@ export default function DashboardSidebar({ user }: { user: any }) {
   }
 
   return (
-    <aside className="w-56 flex flex-col flex-shrink-0" style={{ background:'#0D0D0D', borderRight:'1px solid rgba(255,255,255,0.06)' }}>
+    <aside className="w56 flex flex-col flex-shrink-0" style={{ background: '#0D0D0D', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 py-5" style={{ borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+      <div className="flex items-center gap-2.5 px-4 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <Logo />
-        <div><div className="font-display font-bold text-sm leading-tight" style={{ color:'#F0EFEA' }}>Hire Next<span style={{ color:'#1D9E75' }}> AI</span></div><div className="text-xs leading-tight" style={{ color:'#2A2A2A' }}>Recruiting OS</div></div>
+        <div>
+          <div className="font-display font-bold text-sm leading-tight" style={{ color: '#F0EFEA' }}>
+            Hire Next<span style={{ color: '#1D9E75' }}> AI</span>
+          </div>
+          <div className="text-xs leading-tight" style={{ color: '#2A2A2A' }}>Recruiting OS</div>
+        </div>
       </div>
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
         {NAV.map(item => {
           const active = isActive(item.href, item.exact)
           return (
-            <Link key={item.href} href={item.href} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150" style={{ background:active?'rgba(29,158,117,0.12)':'transparent', color:active?'#1D9E75':'#505050' }}>
-              <item.icon size={15} style={{ flexShrink:0 }} />
+            <Link key={item.href} href={item.href} className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150" style={{ background: active ? 'rgba(29,158,117,0.12)' : 'transparent', color: active ? '#1D9E75' : '#505050' }}>
+              <item.icon size={15} style={{ flexShrink: 0 }} />
               <span className="flex-1">{item.label}</span>
-              {item.badge && <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background:active?'rgba(29,158,117,0.2)':(item.badgeColor==='#E24B4A'?'rgba(226,75,74,0.15)':'rgba(29,158,117,0.12)'), color:item.badgeColor||'#1D9E75', fontSize:'10px' }}>{item.badge}</span>}
+              {item.badge && <span className="text-xs font-bold px-1.5 py-0.5 rounded-full" style={{ background: active ? 'rgba(29,158,117,0.2)' : (item.badgeColor === '#E24B4A' ? 'rgba(226,75,74,0.15)' : 'rgba(29,158,117,0.12)'), color: item.badgeColor || '#1D9E75', fontSize: '10px' }}>{item.badge}</span>}
             </Link>
           )
         })}
       </nav>
-      {/* Agent status */}
+      { /* Agent status */}
       <div className="px-3 pb-2">
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background:'rgba(29,158,117,0.07)', border:'1px solid rgba(29,158,117,0.15)' }}>
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(29,158,117,0.07)', border: '1px solid rgba(29,158,117,0.15)' }}>
           <div className="dot-live" />
-          <div className="flex-1 min-w-0"><div className="text-xs font-medium" style={{ color:'#1D9E75' }}>Agent active</div><div className="text-xs" style={{ color:'#2A2A2A' }}>Polling every 4h</div></div>
-          <Zap size={12} style={{ color:'#1D9E75', flexShrink:0 }} />
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-medium" style={{ color: '#1D9E75' }}>Agent active</div>
+            <div className="text-xs" style={{ color: '#2A2A2A' }}>Polling every 4h</div>
+          </div>
+          <Zap size={12} style={{ color: '#1D9E75', flexShrink: 0 }} />
         </div>
       </div>
-      {/* User */}
-      <div className="px-2 pb-3" style={{ borderTop:'1px solid rgba(255,255,255,0.05)', paddingTop:'10px', marginTop:'4px' }}>
-        <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background:'rgba(255,255,255,0.02)' }}>
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background:'rgba(29,158,117,0.2)', color:'s#1D9E75' }}>{firstName[0]?.toUpperCase()||'U'}</div>
-          <div className="flex-1 min-w-0"><div className="text-xs font-medium truncate" style={{ color:'#8A8880' }}>{company}</div><div className="text-xs" style={{ color:'#2A2A2A' }}>{is0"Beta? <span style={{ color:'#7F77DD' }}>Enterprise Beta</span> : plan}</div></div>
-          <button onClick={signOut} className="p-1 rounded-lg transition-colors" style={{ color:'#3A3A3A' }} onMouseEnter={e=>(e.currentTarget.style.color='#8A8880')} onMouseLeave={e=>(e.currentTarget.style.color='#3A3A3A')}><LogOut size={13} /></button>
+      { /* User */}
+      <div className="px-2 pb-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px', marginTop: '4px' }}>
+        <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <div className="w7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: 'rgba(29,158,117,0.2)', color: '#1D9E75' }}>{firstName[0]?.toUpperCase() || 'U'}</div>
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-medium truncate" style={{ color: '#8A8880' }}>{company}</div>
+            <div className="text-xs" style={{ color: '#2A2A2A' }}>{isBeta ? <span style={{ color: '#7F77DD' }}>Enterprise Beta</span> : plan}</div>
+          </div>
+          <button onClick={signOut} className="p-1 rounded-lg transition-colors" style={{ color: '#3A3A3A' }} onMouseEnter={e => (e.currentTarget.style.color = '#8A8880')} onMouseLeave={e => (e.currentTarget.style.color = '#3A3A3A')}><LogOut size={13} /></button>
         </div>
       </div>
     </aside>
