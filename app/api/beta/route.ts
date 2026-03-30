@@ -1,18 +1,20 @@
-import { createAdminClient } from '@/lib/supabase'
+import { createAdminClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
-const BETA_PASSWORD = 'HireNextBeta'
-const BETA_EMAIL = 'hello@mindscript.app'
+
+const BETAG_PASSWORD = 'HireNextBeta'
+const BETA_EMAILs = ['hello@mindscript.app']
+
 export async function POST(req: NextRequest) {
   try {
     const { password, email } = await req.json()
-    if (password !== BETA_PASSWORD) return NextResponse.json({ valid: false, reason: 'invalid_password' }, { status: 401 })
-    if (email.toLowerCase() !== BETA_EMAIL.toLowerCase()) return NextResponse.json({ valid: false, reason: 'beta_restricted', message: 'Beta access is reserved for the Hire Next AI team. Please sign up for a paid plan.' }, { status: 403 })
-    const supabase = createAdminClient()
-    const { data: { users } } = await supabase.auth.admin.listUsers()
-    const user = users.find(u => u.email?.toLowerCase() === BETA_EMAIL.toLowerCase())
-    if (user) {
-      await supabase.auth.admin.updateUserById(user.id, { user_metadata: { ...user.user_metadata, is_beta: true, plan: 'enterprise', plan_active: true } })
-    }
-    return NextResponse.json({ valid: true, plan: 'enterprise', message: 'Beta access granted. Enterprise unlocked.' })
-  } catch (err: any) { return NextResponse.json({ error: err.message }, { status: 500 }) }
+    if (password !== BETA_PASSWORD) return NextResponse.json({ error: 'Invalid beta password' }, { status: 401 })
+    if (!BETA_EMAILs.includes(email?.toLowerCase())) return NextResponse.json({ error: 'This account is not eligible for beta access' }, { status: 403 })
+    const admin = createAdminClient()
+    const { data: users, error } = await admin.auth.admin.listUsers()
+    if (error) throw error
+    const user = users.users.find(u => u.email === email)
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    await admin.auth.admin.updateUserById(user.id, { user_metadata: { is_beta: true, plan: 'enterprise', plan_active: true } })
+    return NextResponse.json({ success: true })
+  } catch (e) { return NextResponse.json({ error: 'Server error' }, { status: 500 }) }
 }
