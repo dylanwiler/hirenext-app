@@ -1,28 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
-import { createAdminClient } from '@/lib/supabase'
-import { sendWelcomeEmail, sendPaymentSuccessEmail } from '@/lib/emails'
-import type Stripe from 'stripe'
+import Stripe from 'stripe'
+import { createAdminClient } from '@/lib/supabase-server'
+import { sendPaymentSuccessEmail } from '@/lib/emails'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+
 export async function POST(req: NextRequest) {
   const body = await req.text()
   const sig = req.headers.get('stripe-signature')!
   let event: Stripe.Event
-  try { event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!) }
-  catch (err: any) { return NextResponse.json({ error: 'Invalid signature' }, { status: 400 }) }
-  const supabase = createAdminClient()
+  try {
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!)
+  } catch (err) {
+    return NextResponse.json({ error: 'Webhook signature invalid' }, { status: 400 })
+  }
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.CheckoutSession
-    const userId = session.metadata?.user_id
-    const planId = session.metadata?.plan_id
-    if (userId && planId) {
-      const { data: { user } } = await supabase.auth.admin.getUserById(userId)
-      if (user) {
-        await supabase.auth.admin.updateUserById(userId, { user_metadata: { ...user.user_metadata, plan: planId, plan_active: true, stripe_customer_id: session.customer } })
-        if (user.email) {
-          await sendWelcomeEmail(user.email, user.user_metadata?.first_name||'there', user.user_metadata?.company_name||'your company')
-          await sendPaymentSuccessEmail(user.email, user.user_metadata?.first_name||'there', planId, session.amount_total||0)
-        }
-      }
+    const session = event.data.object as Stripe.Checkout.Session
+    const email = session.customer_email || ''
+    const planId = session.metadata?.planId || 'unknown'
+    const amount = session.amount_total || 0
+    const admin = createAdminClient()
+    const { data: users } = await admin.auth.admin.listUsers()
+    const user = users?.users.find(u => u.email === email)
+    if (user) {
+      await admin.auth.admin.updateUserById(user.id, {
+        user_metadata: { plan: planId, plan_active: true, stripe_session_id: session.id }
+      })
+      await sendPaymentSuccessEmail(email, user.user_metadata?.first_name || '', planId, amount)
     }
   }
   return NextResponse.json({ received: true })
