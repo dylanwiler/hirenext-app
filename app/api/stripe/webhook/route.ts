@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
     const planId = session.metadata?.planId || 'unknown'
     const amount = session.amount_total || 0
     const admin = createAdminClient()
-    const { data: users } = await admin.auth.admin.listUsers()
-    const user = users?.users.find(u => u.email === email)
+    const { data: usersData } = await admin.auth.admin.listUsers()
+    const user = usersData?.users.find((u: { email?: string }) => u.email === email)
     if (user) {
       await admin.auth.admin.updateUserById(user.id, {
         user_metadata: { plan: planId, plan_active: true, stripe_session_id: session.id }
