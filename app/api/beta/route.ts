@@ -1,14 +1,14 @@
 import { createAdminClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
 
-const BETAG_PASSWORD = 'HireNextBeta'
-const BETA_EMAILs = ['hello@mindscript.app']
+const BETA_PASSWORD = 'HireNextBeta'
+const BETA_EMAILS = ['hello@mindscript.app']
 
 export async function POST(req: NextRequest) {
   try {
     const { password, email } = await req.json()
     if (password !== BETA_PASSWORD) return NextResponse.json({ error: 'Invalid beta password' }, { status: 401 })
-    if (!BETA_EMAILs.includes(email?.toLowerCase())) return NextResponse.json({ error: 'This account is not eligible for beta access' }, { status: 403 })
+    if (!BETA_EMAILS.includes(email?.toLowerCase())) return NextResponse.json({ error: 'This account is not eligible for beta access' }, { status: 403 })
     const admin = createAdminClient()
     const { data: users, error } = await admin.auth.admin.listUsers()
     if (error) throw error
