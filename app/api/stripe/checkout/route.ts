@@ -1,25 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe, PLANS, type PlanId } from '@/lib/stripe'
-import { createServerSupabaseClient } from '@/lib/supabase'
+import Stripe from 'stripe'
+import { createServerSupabaseClient } from '@/lib/supabase-server'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+
+const PRICE_IDS: Record<string, string> = {
+  solo: process.env.STRIPE_PRICE_SOLO || 'price_1TGVkH1lvYSC7itfl4Wl7lHT',
+  growth: process.env.STRIPE_PRICE_GROWTH || 'price_1TGVjn1lvYSC7itfXmmXnORK',
+  scale: process.env.STRIPE_PRICE_SCALE || 'price_1TGVjF1lvYSC7itfJcKBjlg4',
+}
+
 export async function POST(req: NextRequest) {
   try {
+    const { planId } = await req.json()
     const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const { planId } = await req.json() as { planId: PlanId }
-    const plan = PLANS[planId]
-    if (!plan) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.hirenext.app'
+    const priceId = PRICE_IDS[planId]
+    if (!priceId) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
     const session = await stripe.checkout.sessions.create({
-      customer_email: user.email, client_reference_id: user.id,
-      payment_method_types: ['card'], mode: 'subscription',
-      line_items: [{ price: plan.priceId, quantity: 1 }],
-      subscription_data: { metadata: { user_id: user.id, plan_id: planId }, trial_period_days: 14 },
-      metadata: { user_id: user.id, plan_id: planId },
-      success_url: `${appUrl}/dashboard?payment=success&plan=${planId}`,
-      cancel_url: `${appUrl}/dashboard/settings/billing?payment=cancelled`,
-      allow_promotion_codes: true,
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      mode: 'subscription',
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/settings/billing`,
+      customer_email: user.email,
+      metadata: { planId, userId: user.id },
     })
     return NextResponse.json({ url: session.url })
-  } catch (err: any) { return NextResponse.json({ error: err.message }, { status: 500 }) }
+  } catch (e) {
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  }
 }
