@@ -1,13 +1,14 @@
 'use client'
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { Check, ArrowUpRight, Zap, CreditCard } from 'lucide-react'
 import { toast } from 'sonner'
 import BetaAccessCard from '@/components/BetaAccessCard'
 
 const PLANS = [
-  { id: 'solo', name: 'Solo', price: '$199', period: '/mo', limits: '1 role · 100 resumes · 10 interviews', priceId: 'price_1TGVkH1lvYSC7itfl4Wl7lHT' },
-  { id: 'growth', name: 'Growth', price: '$349', period: '/mo', limits: '3 roles · 300 resumes · 30 interviews', popular: true, priceId: 'price_1TGVjn1lvYSC7itfXmmXnORK' },
-  { id: 'scale', name: 'Scale', price: '$599', period: '/mo', limits: 'Unlimited roles · resumes · interviews', priceId: 'price_1TGVjF1lvYSC7itfJcKBjlg4' },
+  { id: 'solo', name: 'Solo', price: '$199', period: '/mo', limits: '1 role Â· 100 resumes Â· 10 interviews', priceId: 'price_1TGVkH1lvYSC7itfl4Wl7lHT' },
+  { id: 'growth', name: 'Growth', price: '$349', period: '/mo', limits: '3 roles Â· 300 resumes Â· 30 interviews', popular: true, priceId: 'price_1TGVjn1lvYSC7itfXmmXnORK' },
+  { id: 'scale', name: 'Scale', price: '$599', period: '/mo', limits: 'Unlimited roles Â· resumes Â· interviews', priceId: 'price_1TGVjF1lvYSC7itfJcKBjlg4' },
 ]
 
 export default function BillingPage() {
