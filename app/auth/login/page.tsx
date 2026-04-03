@@ -3,13 +3,12 @@ export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase'
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
   const [email, setEmail] = useState('')
@@ -21,10 +20,14 @@ function LoginForm() {
     e.preventDefault()
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { toast.error(error.message); setLoading(false); return }
+    if (error) {
+      toast.error(error.message)
+      setLoading(false)
+      return
+    }
+    // Hard redirect so middleware sees the new auth cookie
     const next = searchParams.get('next') || '/dashboard'
-    router.push(next)
-    router.refresh()
+    window.location.href = next
   }
 
   return (
@@ -44,10 +47,12 @@ function LoginForm() {
               <label className="block text-xs font-medium mb-1.5" style={{ color: '#8A8880' }}>Password</label>
               <div className="relative">
                 <input className="input pr-10" type={showPw ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#4A4845' }}>{showPw ? <EyeOff size={14} /> : <Eye size={14} />}</button>
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#4A4845' }}>
+                  {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full justify-center flex items-center gap-2">
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center flex items-center gap-2 disabled:opacity-40">
               {loading ? 'Signing in...' : <><span>Sign in</span><ArrowRight size={14} /></>}
             </button>
           </form>
