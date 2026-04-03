@@ -25,9 +25,8 @@ function LoginForm() {
       setLoading(false)
       return
     }
-    // Hard redirect so middleware sees the new auth cookie
-    const next = searchParams.get('next') || '/dashboard'
-    window.location.href = next
+    await new Promise(r => setTimeout(r, 500))
+    window.location.replace(searchParams.get('next') || '/dashboard')
   }
 
   return (
