@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { Settings, Check, Bell, Zap } from 'lucide-react'
 import { toast } from 'sonner'
@@ -25,7 +26,7 @@ export default function SettingsPage() {
           </div>
           <div className="rounded-2xl p-5" style={{ background:'#111111', border:'1px solid rgba(255,255,255,0.06)' }}>
             <div className="flex items-center justify-between mb-4"><h3 className="text-sm font-semibold" style={{ color:'s#F0EFEA' }}>ZipRecruiter</h3><div className="flex items-center gap-1.5" style={{ color:'#1D9E75' }}><Check size={12} /><span className="text-xs font-medium">Connected</span></div></div>
-            <p className="text-sm" style={{ color:'#8A8880' }}>hello@mindscript.app · 553 candidates synced</p>
+            <p className="text-sm" style={{ color:'#8A8880' }}>hello@mindscript.app Â· 553 candidates synced</p>
           </div>
           <div className="rounded-2xl p-5" style={{ background:'#111111', border:'1px solid rgba(255,255,255,0.06)' }}>
             <div className="flex items-center gap-2 mb-4"><Bell size={16} style={{ color:'#8A8880' }} /><h3 className="text-sm font-semibold" style={{ color:'#F0EFEA' }}>Notifications</h3></div>
@@ -41,7 +42,7 @@ export default function SettingsPage() {
           <div className="rounded-2xl p-5" style={{ background:'rgba(29,158,117,0.06)', border:'1px solid rgba(29,158,117,0.25)' }}>
             <h3 className="text-sm font-semibold mb-2" style={{ color:'#1D9E75' }}>Billing</h3>
             <p className="text-sm mb-3" style={{ color:'#8A8880' }}>Manage your subscription and payment methods</p>
-            <Link href="/dashboard/settings/billing" className="btn-primary text-sm inline-flex">View billing &amp; plans →</Link>
+            <Link href="/dashboard/settings/billing" className="btn-primary text-sm inline-flex">View billing &amp; plans â</Link>
           </div>
           <div className="rounded-2xl p-5" style={{ background:'#111111', border:'1px solid rgba(255,255,255,0.06)' }}>
             <h3 className="text-sm font-semibold mb-2" style={{ color:'#F0EFEA' }}>Danger zone</h3>
