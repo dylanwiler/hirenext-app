@@ -1,43 +1,65 @@
 'use client'
 export const dynamic = 'force-dynamic'
+import { Suspense } from 'react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { toast } from 'sonner'
 import { ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase'
-export default function LoginPage() {
+
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showPass, setShowPass] = useState(false)
-  const [form, setForm] = useState({ email: '', password: '' })
-  async function handleLogin() {
-    if (!form.email || !form.password) { toast.error('Please enter your email and password'); return }
+  const [showPw, setShowPw] = useState(false)
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault()
     setLoading(true)
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email: form.email, password: form.password })
-      if (error) throw error
-      router.push(searchParams.get('redirect') || '/dashboard')
-      router.refresh()
-    } catch (err: any) { toast.error(err.message === 'Invalid login credentials' ? 'Incorrect email or password' : err.message) }
-    finally { setLoading(false) }
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) { toast.error(error.message); setLoading(false); return }
+    const next = searchParams.get('next') || '/dashboard'
+    router.push(next)
+    router.refresh()
   }
+
   return (
-    <div className="w-full max-w-md">
-      <div className="text-center mb-8">
-        <h1 className="font-display font-extrabold text-3xl mb-2" style={{ color:'#F0EFEA' }}>Welcome back</h1>
-        <p className="text-sm" style={{ color:'#8A8880' }}>No account? <Link href="/auth/signup" style={{ color:'#1D9E75' }} className="font-medium hover:underline">Sign up free</Link></p>
-      </div>
-      <div className="card p-7 space-y-4">
-        <div><label className="block text-xs font-medium mb-1.5" style={{ color:'#8A8880' }}>Email</label><input className="input" type="email" placeholder="you@company.com" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&handleLogin()} /></div>
-        <div>
-          <div className="flex items-center justify-between mb-1.5"><label className="text-xs font-medium" style={{ color:'#8A8880' }}>Password</label><Link href="/auth/forgot-password" className="text-xs hover:underline" style={{ color:'#4A4845' }}>Forgot?</Link></div>
-          <div className="relative"><input className="input pr-10" type={showPass?'text':'password'} placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))} onKeyDown={e=>e.key==='Enter'&&handleLogin()} /><button type="button" className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color:'#4A4845' }} onClick={()=>setShowPass(!showPass)}>{showPass?<EyeOff size={16}/>:<Eye size={16}/>}</button></div>
+    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: '#090909' }}>
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <h1 className="font-display font-extrabold text-2xl mb-2" style={{ color: '#F0EFEA' }}>Welcome back</h1>
+          <p className="text-sm" style={{ color: '#4A4845' }}>Sign in to your Hire Next AI account</p>
         </div>
-        <button onClick={handleLogin} disabled={loading} className="btn-primary w-full justify-center mt-2">{loading?'Signing in...':'Sign in'}{!loading&&<ArrowRight size={15}/>}</button>
+        <div className="card p-6">
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium mb-1.5" style={{ color: '#8A8880' }}>Email</label>
+              <input className="input" type="email" placeholder="you@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1.5" style={{ color: '#8A8880' }}>Password</label>
+              <div className="relative">
+                <input className="input pr-10" type={showPw ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#4A4845' }}>{showPw ? <EyeOff size={14} /> : <Eye size={14} />}</button>
+              </div>
+            </div>
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center flex items-center gap-2">
+              {loading ? 'Signing in...' : <><span>Sign in</span><ArrowRight size={14} /></>}
+            </button>
+          </form>
+        </div>
+        <p className="text-center mt-4 text-sm" style={{ color: '#4A4845' }}>
+          No account? <Link href="/auth/signup" className="font-medium" style={{ color: '#1D9E75' }}>Sign up</Link>
+        </p>
       </div>
     </div>
   )
+}
+
+export default function LoginPage() {
+  return <Suspense fallback={null}><LoginForm /></Suspense>
 }
