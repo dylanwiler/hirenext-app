@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -7,9 +8,9 @@ import { ArrowRight, Eye, EyeOff, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 
 const PLANS = [
-  { id: 'solo', name: 'Solo', price: '$199/mo', roles: '1 role · 10 interviews' },
-  { id: 'growth', name: 'Growth', price: '$349/mo', roles: '3 roles · 30 interviews', popular: true },
-  { id: 'scale', name: 'Scale', price: '$599/mo', roles: '8 roles · 60 interviews' },
+  { id: 'solo', name: 'Solo', price: '$199/mo', roles: '1 role Â· 10 interviews' },
+  { id: 'growth', name: 'Growth', price: '$349/mo', roles: '3 roles Â· 30 interviews', popular: true },
+  { id: 'scale', name: 'Scale', price: '$599/mo', roles: '8 roles Â· 60 interviews' },
 ]
 
 export default function SignupPage() {
