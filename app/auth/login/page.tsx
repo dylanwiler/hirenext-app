@@ -19,14 +19,17 @@ function LoginForm() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       toast.error(error.message)
       setLoading(false)
       return
     }
-    await new Promise(r => setTimeout(r, 500))
-    window.location.replace(searchParams.get('next') || '/dashboard')
+    // Pass token to server-side callback to set cookies properly
+    const next = searchParams.get('next') || '/dashboard'
+    const token = data.session.access_token
+    const refresh = data.session.refresh_token
+    window.location.href = `/auth/set-session?access_token=${token}&refresh_token=${refresh}&next=${encodeURIComponent(next)}`
   }
 
   return (
