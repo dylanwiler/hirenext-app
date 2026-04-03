@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-dynamic'
 import { useState } from 'react'
 import { Mic, Phone, Play, Check, Clock } from 'lucide-react'
 import { toast } from 'sonner'
@@ -33,7 +34,7 @@ export default function InterviewsPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium truncate" style={{ color:'#F0EFEA' }}>{inv.name}</div>
-                <div className="text-xs" style={{ color:'#4A4845' }}>{inv.date}{inv.score!==null?` · ${inv.score}/100`:''}</div>
+                <div className="text-xs" style={{ color:'#4A4845' }}>{inv.date}{inv.score!==null?` Â· ${inv.score}/100`:''}</div>
               </div>
             </div>
           ))}
