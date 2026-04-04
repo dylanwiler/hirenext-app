@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createServerSupabaseClient()
   const { error } = await supabase.auth.setSession({ access_token, refresh_token })
-  
+
   if (error) {
     return NextResponse.redirect(new URL('/auth/login?error=session', request.url))
   }
