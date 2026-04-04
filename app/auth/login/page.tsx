@@ -19,17 +19,14 @@ function LoginForm() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       toast.error(error.message)
       setLoading(false)
       return
     }
-    // Pass token to server-side callback to set cookies properly
-    const next = searchParams.get('next') || '/dashboard'
-    const token = data.session.access_token
-    const refresh = data.session.refresh_token
-    window.location.href = `/api/auth/set-session?access_token=${token}&refresh_token=${refresh}&next=${encodeURIComponent(next)}`
+    // Session is now in localStorage - client layout will pick it up
+    window.location.href = searchParams.get('next') || '/dashboard'
   }
 
   return (
@@ -48,7 +45,7 @@ function LoginForm() {
             <div>
               <label className="block text-xs font-medium mb-1.5" style={{ color: '#8A8880' }}>Password</label>
               <div className="relative">
-                <input className="input pr-10" type={showPw ? 'text' : 'password'} placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" value={password} onChange={e => setPassword(e.target.value)} required />
+                <input className="input pr-10" type={showPw ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#4A4845' }}>
                   {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
