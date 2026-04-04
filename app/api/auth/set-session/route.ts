@@ -11,18 +11,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  // Create response first so we can set cookies on it
   const response = NextResponse.redirect(new URL(next, request.url))
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options as Record<string, unknown>)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setAll(cookiesToSet: any[]) {
+          cookiesToSet.forEach(({ name, value, options }: any) => {
+            response.cookies.set(name, value, options)
           })
         },
       },
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.setSession({ access_token, refresh_token })
 
   if (error) {
-    return NextResponse.redirect(new URL('/auth/login?error=' + encodeURIComponent(error.message), request.url))
+    return NextResponse.redirect(new URL(`/auth/login?error=${encodeURIComponent(error.message)}`, request.url))
   }
 
   return response
