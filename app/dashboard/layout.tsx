@@ -13,33 +13,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        router.replace('/auth/login')
-      } else {
-        setUser(session.user)
-        setLoading(false)
-      }
+      if (!session) { router.replace('/auth/login') }
+      else { setUser(session.user); setLoading(false) }
     })
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        router.replace('/auth/login')
-      } else {
-        setUser(session.user)
-        setLoading(false)
-      }
+      if (!session) { router.replace('/auth/login') }
+      else { setUser(session.user); setLoading(false) }
     })
-
     return () => subscription.unsubscribe()
   }, [])
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A0A0A' }}>
-        <div className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: '#1D9E75', borderTopColor: 'transparent' }} />
-      </div>
-    )
-  }
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A0A0A' }}>
+      <div className="w-8 h-8 rounded-full border-2 animate-spin" style={{ borderColor: '#1D9E75', borderTopColor: 'transparent' }} />
+    </div>
+  )
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: '#0A0A0A' }}>
